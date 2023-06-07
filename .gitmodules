@@ -1,0 +1,9 @@
+[submodule "STM32CubeG0"]
+	path = STM32CubeG0
+	url = https://github.com/STMicroelectronics/STM32CubeG0.git
+[submodule "lib/cmsis_device_g0"]
+	path = lib/cmsis_device_g0
+	url = https://github.com/STMicroelectronics/cmsis_device_g0.git
+[submodule "lib/cmsis_5"]
+	path = lib/cmsis_5
+	url = https://github.com/ARM-software/CMSIS_5.git
