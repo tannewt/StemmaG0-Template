@@ -38,7 +38,7 @@ CORE_LIB_OBJS        = $(CORE_OBJ_SRC:.c=.o)
 CORE_LOCAL_LIB_OBJS  = $(notdir $(CORE_LIB_OBJS))
 
 ## Rules
-all: size flash
+all: main.bin
 
 main.elf: $(OBJS) $(LINKER_SCRIPT) common.ld
 	$(LD) $(LFLAGS) -mcpu=cortex-m0 -mthumb -o $@ $(OBJS)
