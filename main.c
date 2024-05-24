@@ -1,17 +1,18 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "lib/cmsis_device_g0/Include/stm32g030xx.h"
+#include "build/flash.h"
+#include "build/gpiob.h"
+#include "build/rcc.h"
 
 // Override __libc_init_array because it crashes.
 void __libc_init_array(void) {;}
 
 size_t led_pin = 9;
 
-void main() {
+int main() {
     // Check that the boot pin is active
-    if ((FLASH->OPTR & FLASH_OPTR_nBOOT_SEL) != 0) {
-
+    if (!FLASH->OPTR.nBOOT_SEL) {
         // Clear the write lock
         FLASH->KEYR = 0x45670123;
         FLASH->KEYR = 0xCDEF89AB;
@@ -21,32 +22,32 @@ void main() {
         FLASH->OPTKEYR = 0x4C5D6E7F;
 
         // Clear nBOOT_SEL
-        FLASH->OPTR &= ~FLASH_OPTR_nBOOT_SEL;
+        FLASH->OPTR.nBOOT_SEL = false;
 
         // Wait for any ongoing flash access.
-        while ((FLASH->SR & FLASH_SR_BSY1) != 0) {}
+        while (FLASH->SR.BSY) {}
 
-        FLASH->CR |= FLASH_CR_OPTSTRT;
+        FLASH->CR.OPTSTRT = true;
 
         // Wait for the option write to complete.
-        while ((FLASH->SR & FLASH_SR_BSY1) != 0) {}
+        while (FLASH->SR.BSY) {}
 
         // Lock the flash.
-        FLASH->CR |= FLASH_CR_LOCK;
+        FLASH->CR.LOCK = true;
     }
-    RCC->IOPENR |= RCC_IOPENR_GPIOBEN;
+    RCC->IOPENR.IOPBEN = true;
     // Add your code here.
-    GPIOB->MODER &= ~(0x3 << (led_pin * 2));
-    GPIOB->MODER |= (0x1 << (led_pin * 2));
+    GPIOB_REGS->MODER &= ~(0x3 << (led_pin * 2));
+    GPIOB_REGS->MODER |= (0x1 << (led_pin * 2));
     uint32_t mask = 1 << led_pin;
     while (true) {
         for (size_t i = 0; i < 500000; i++) {
             asm("nop");
         }
-        GPIOB->BSRR = mask;
+        GPIOB_REGS->BSRR = mask;
         for (size_t i = 0; i < 500000; i++) {
             asm("nop");
         }
-        GPIOB->BSRR = mask << 16;
+        GPIOB_REGS->BSRR = mask << 16;
     }
 }
