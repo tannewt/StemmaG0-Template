@@ -16,10 +16,10 @@ async def build_stemmag0():
 		tg.create_task(mcu.generate_c_header("I2C", build / "i2c.h"))
 		tg.create_task(mcu.generate_c_header("RCC", build / "rcc.h"))
 	compiler = embedded.compiler.Clang()
-	await compiler.compile(mcu.cpu, "main.c", build / "main.o", ["-I build"])
+	await compiler.compile(mcu.cpu, "main.c", build / "main.o", ["-I build", "-O0", "-ggdb3"])
 	await mcu.generate_linker_script(build / "linker.ld")
 	await mcu.generate_startup_source(build / "startup.c", interrupts_used=("I2C1",))
-	await compiler.compile(mcu.cpu, build / "startup.c", build / "startup.o", ["-I build"])
+	await compiler.compile(mcu.cpu, build / "startup.c", build / "startup.o", ["-I build", "-O0", "-ggdb3"])
 	await compiler.link(mcu.cpu, [build / "main.o", build / "startup.o"], build / "main.elf", build / "linker.ld", ["-nostdlib"])
 
 if __name__ == "__main__":
