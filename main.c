@@ -10,6 +10,10 @@ void __libc_init_array(void) {;}
 
 size_t led_pin = 9;
 
+void I2C1_Handler(void) {
+    while (1) {}
+}
+
 int main() {
     // Check that the boot pin is active
     if (!FLASH->OPTR.nBOOT_SEL) {
