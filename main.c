@@ -16,14 +16,23 @@ void I2C1_Handler(void) {
 
 int main() {
     // Check that the boot pin is active
-    if (!FLASH->OPTR.nBOOT_SEL) {
+    if (FLASH->OPTR.nBOOT_SEL) {
+        // Wait a little while to improve the chance power is stable.
+        for (size_t i = 0; i < 500000; i++) {
+            asm("nop");
+        }
+
         // Clear the write lock
         FLASH->KEYR = 0x45670123;
         FLASH->KEYR = 0xCDEF89AB;
 
+        while (FLASH->CR.LOCK) {}
+
         // Clear the option lock
         FLASH->OPTKEYR = 0x08192A3B;
         FLASH->OPTKEYR = 0x4C5D6E7F;
+
+        while (FLASH->CR.OPTLOCK) {}
 
         // Clear nBOOT_SEL
         FLASH->OPTR.nBOOT_SEL = false;
