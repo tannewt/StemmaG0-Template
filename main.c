@@ -3,6 +3,7 @@
 
 #include "build/flash.h"
 #include "build/gpiob.h"
+#include "build/i2c.h"
 #include "build/rcc.h"
 
 // Override __libc_init_array because it crashes.
@@ -10,8 +11,20 @@ void __libc_init_array(void) {;}
 
 size_t led_pin = 9;
 
+uint8_t command = 0;
+uint32_t data = 0;
+
 void I2C1_Handler(void) {
     while (1) {}
+}
+
+void init_stemma(void) {
+    I2C_Type* i2c = I2C1;
+    i2c->CR1.PE = false;
+
+    i2c->TIMINGR = ;
+    i2c->CR1.NOSTRETCH = true;
+    i2c->CR1.PE = true;
 }
 
 int main() {
@@ -48,7 +61,9 @@ int main() {
         // Lock the flash.
         FLASH->CR.LOCK = true;
     }
+    init_stemma();
     RCC->IOPENR.IOPBEN = true;
+
     // Add your code here.
     GPIOB_REGS->MODER &= ~(0x3 << (led_pin * 2));
     GPIOB_REGS->MODER |= (0x1 << (led_pin * 2));
