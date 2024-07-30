@@ -15,6 +15,7 @@ async def build_stemmag0():
 		tg.create_task(mcu.generate_c_header("GPIOB", build / "gpiob.h"))
 		tg.create_task(mcu.generate_c_header("I2C", build / "i2c.h"))
 		tg.create_task(mcu.generate_c_header("RCC", build / "rcc.h"))
+		tg.create_task(mcu.generate_c_header("NVIC", build / "nvic.h"))
 	compiler = embedded.compiler.Clang()
 	await compiler.compile(mcu.cpu, "main.c", build / "main.o", ["-I build", "-O0", "-ggdb3"])
 	await mcu.generate_linker_script(build / "linker.ld")
